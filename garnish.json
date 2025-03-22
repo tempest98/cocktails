@@ -1,0 +1,114 @@
+{
+  "garnishes": {
+    "citrus": [
+      "lemon peel",
+      "lemon twist",
+      "lemon zest",
+      "lemon slice",
+      "lemon wedge",
+      "lime peel",
+      "lime twist",
+      "lime zest",
+      "lime slice",
+      "lime wedge",
+      "orange peel",
+      "orange twist",
+      "orange zest",
+      "orange slice",
+      "orange wedge",
+      "grapefruit peel",
+      "grapefruit twist",
+      "grapefruit zest",
+      "grapefruit slice"
+    ],
+    "herbs": [
+      "mint leaves",
+      "mint sprig",
+      "mint leaf",
+      "rosemary sprig",
+      "thyme sprig",
+      "basil leaf",
+      "sage leaf",
+      "cilantro leaves",
+      "lavender sprig"
+    ],
+    "fruits": [
+      "cherry",
+      "maraschino cherry",
+      "cocktail cherry",
+      "olive",
+      "cocktail olive",
+      "olives",
+      "strawberry",
+      "raspberry",
+      "blueberry",
+      "blackberry",
+      "pineapple wedge",
+      "pineapple slice",
+      "apple slice",
+      "cucumber slice",
+      "cucumber ribbon"
+    ],
+    "rimming": [
+      "salt rim",
+      "salt",
+      "coarse salt",
+      "salt for rimming",
+      "sugar rim",
+      "sugar",
+      "sugar for rimming",
+      "colored sugar",
+      "flavored salt"
+    ],
+    "spices": [
+      "cinnamon stick",
+      "star anise",
+      "nutmeg",
+      "clove",
+      "pepper",
+      "ground pepper",
+      "ground cinnamon",
+      "vanilla bean",
+      "cardamom pod",
+      "coffee beans"
+    ],
+    "toppings": [
+      "whipped cream",
+      "ice cream",
+      "whip cream",
+      "coconut cream",
+      "chocolate shavings",
+      "cocoa powder",
+      "powdered sugar",
+      "honey drizzle",
+      "candy pieces"
+    ],
+    "functional": [
+      "ice",
+      "cubed ice",
+      "crushed ice",
+      "ice cubes",
+      "umbrella",
+      "cocktail umbrella",
+      "cocktail stick",
+      "stir stick",
+      "swizzle stick",
+      "edible flower",
+      "cocktail onion",
+      "pickled vegetable",
+      "bacon strip",
+      "celery stalk",
+      "pickled jalapeño"
+    ],
+    "specialUnits": [
+      "twist of"
+    ],
+    "smallMeasurementUnits": [
+      "dash",
+      "drop",
+      "pinch",
+      "slice",
+      "sprig"
+    ]
+  }
+}
