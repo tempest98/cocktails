@@ -1,0 +1,6 @@
+/* App-level styles that might be needed beyond Tailwind */
+.App {
+  width: 100%;
+}
+
+/* Preserve any custom styling needed for specific elements */

@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles that might be needed beyond Tailwind */
+body {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom component styles */
+@layer components {
+  .ingredient-tag {
+    @apply inline-block px-3 py-1 m-1 rounded-full text-sm;
+  }
+  
+  .missing-ingredient {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .available-ingredient {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .cocktail-img {
+    @apply h-48 w-full object-cover;
+  }
+
+  .abv-badge {
+    @apply absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs;
+  }
+
+  .tag-pill {
+    @apply inline-block px-2 py-0.5 m-0.5 bg-gray-600 text-white rounded-full text-xs;
+  }
+}
