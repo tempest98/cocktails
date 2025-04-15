@@ -1,6 +1,6 @@
 import { actions, afterMount, kea, listeners, path, reducers, selectors } from 'kea'
 import { loaders } from 'kea-loaders'
-import { Cocktail } from '../types/cocktailTypes'
+import { Cocktail, Ingredient } from '../types/cocktailTypes'
 
 import type { cocktailsLogicType } from './cocktailsLogicType'
 
@@ -9,6 +9,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
 
   actions({
     fetchCocktails: true,
+    fetchIngredients: true,
     setSearchTerm: (term: string) => ({ term }),
     addSelectedIngredient: (ingredient: string) => ({ ingredient }),
     removeSelectedIngredient: (ingredient: string) => ({ ingredient }),
@@ -27,6 +28,21 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
           return data
         } catch (error) {
           console.error('Error loading cocktail data:', error)
+          return []
+        }
+      },
+    },
+    ingredients: {
+      loadIngredients: async (): Promise<Ingredient[]> => {
+        try {
+          const response = await fetch('/ingredients.json')
+          if (!response.ok) {
+            throw new Error('Failed to fetch ingredient data')
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error('Error loading ingredient data:', error)
           return []
         }
       },
@@ -64,6 +80,17 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
   }),
 
   selectors({
+    sortedIngredientNames: [
+      (s) => [s.ingredients],
+      (ingredients): string[] => {
+        if (!ingredients) return []
+
+        return ingredients
+          .map((ingredient: Ingredient) => ingredient.name)
+          .sort((a: string, b: string) => a.localeCompare(b))
+      },
+    ],
+
     filteredCocktails: [
       (s) => [s.cocktails, s.selectedIngredients, s.searchMode],
       (cocktails, selectedIngredients, searchMode): Cocktail[] => {
@@ -148,12 +175,17 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
 
   listeners(({ actions }) => ({
     fetchCocktails: async ({}, breakpoint) => {
-      await breakpoint(300)
+      // await breakpoint(300)
       actions.loadCocktails()
+    },
+    fetchIngredients: async ({}, breakpoint) => {
+      // await breakpoint(300)
+      actions.loadIngredients()
     },
   })),
 
   afterMount(({ actions }) => {
     actions.fetchCocktails()
+    actions.fetchIngredients()
   }),
 ])
