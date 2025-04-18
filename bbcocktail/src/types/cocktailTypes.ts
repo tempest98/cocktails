@@ -14,6 +14,11 @@ export interface CocktailIngredient {
   units: string
 }
 
+export interface IngredientSearchItem {
+  name: string
+  id: string
+}
+
 export interface CocktailImage {
   copyright: string
   placeholder_hash: string

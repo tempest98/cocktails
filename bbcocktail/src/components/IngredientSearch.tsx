@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, KeyboardEvent } from 'react'
 import { useActions, useValues } from 'kea'
 import { cocktailsLogic } from '../logic/cocktailsLogic'
+import { IngredientSearchItem } from '../types/cocktailTypes'
 import Fuse from 'fuse.js'
 
 export function IngredientSearch() {
@@ -23,14 +24,16 @@ export function IngredientSearch() {
     // If search is only one character, do simple prefix matching
     if (trimmedSearch.length === 1) {
       return sortedIngredientNames.filter(ingredient => 
-        ingredient.toLowerCase().includes(trimmedSearch)
+        ingredient.name.toLowerCase().includes(trimmedSearch) || 
+        ingredient.id.toLowerCase().includes(trimmedSearch)
       )
     }
     
     // For longer searches, use a hybrid approach
     // First try to find ingredients that contain the search term
     const directMatches = sortedIngredientNames.filter(ingredient => 
-      ingredient.toLowerCase().includes(trimmedSearch)
+      ingredient.name.toLowerCase().includes(trimmedSearch) || 
+      ingredient.id.toLowerCase().includes(trimmedSearch)
     )
     
     // If we have direct matches, return those
@@ -42,7 +45,7 @@ export function IngredientSearch() {
     const fuse = new Fuse(sortedIngredientNames, {
       threshold: 0.3, // More strict matching to avoid incorrect matches
       includeScore: true,
-      keys: [''],
+      keys: ['name', 'id'],
       ignoreLocation: true,
       minMatchCharLength: 2,
       findAllMatches: true,
@@ -63,7 +66,7 @@ export function IngredientSearch() {
     
     // First try exact match (case insensitive)
     const exactMatch = sortedIngredientNames.find(
-      ingredient => ingredient.toLowerCase() === trimmedSearch
+      ingredient => ingredient.name.toLowerCase() === trimmedSearch || ingredient.id.toLowerCase() === trimmedSearch
     )
     
     if (exactMatch) {
@@ -78,8 +81,8 @@ export function IngredientSearch() {
     return null
   }
 
-  const handleSelectIngredient = (ingredient: string) => {
-    addSelectedIngredient(ingredient)
+  const handleSelectIngredient = (ingredient: IngredientSearchItem) => {
+    addSelectedIngredient(ingredient.name)
     setSearchText('')
     
     // Keep the dropdown open but update the state to trigger a re-render
@@ -175,7 +178,7 @@ export function IngredientSearch() {
                   }`}
                   onClick={() => handleSelectIngredient(ingredient)}
                 >
-                  {ingredient}
+                  {ingredient.name}
                 </li>
               ))}
             </ul>

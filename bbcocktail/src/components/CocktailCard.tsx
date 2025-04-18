@@ -1,6 +1,6 @@
 import React from 'react'
 import { useValues } from 'kea'
-import { Cocktail, Ingredient } from '../types/cocktailTypes'
+import { Cocktail, CocktailIngredient } from '../types/cocktailTypes'
 import { cocktailsLogic } from '../logic/cocktailsLogic'
 import { formatAmount } from '../utils/formatAmount'
 
@@ -13,7 +13,7 @@ export function CocktailCard({ cocktail }: CocktailCardProps) {
   const selectedIngredientsArray = Array.from(selectedIngredients)
   
   // Determine ingredient availability
-  const isIngredientAvailable = (ingredient: Ingredient): boolean => {
+  const isIngredientAvailable = (ingredient: CocktailIngredient): boolean => {
     const ingredientName = ingredient.name.toLowerCase()
     return selectedIngredientsArray.some((selected) => 
       ingredientName.includes(selected) || selected.includes(ingredientName)

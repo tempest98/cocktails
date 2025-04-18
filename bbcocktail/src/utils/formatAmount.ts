@@ -1,6 +1,6 @@
-import { Ingredient } from '../types/cocktailTypes'
+import { CocktailIngredient } from '../types/cocktailTypes'
 
-export function formatAmount(ingredient: Ingredient): string {
+export function formatAmount(ingredient: CocktailIngredient): string {
   const { amount, units } = ingredient
   
   // Handle special case for "twist of" unit
