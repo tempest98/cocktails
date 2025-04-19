@@ -83,7 +83,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
   selectors({
     sortedIngredientNames: [
       (s) => [s.ingredients],
-      (ingredients: Ingredient[]): IngredientSearchItem[] => {
+      (ingredients): IngredientSearchItem[] => {
         if (!ingredients) return []
 
         return ingredients
@@ -98,7 +98,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
 
     filteredCocktails: [
       (s) => [s.cocktails, s.selectedIngredients, s.searchMode],
-      (cocktails: Cocktail[], selectedIngredients: Set<string>, searchMode: 'missing' | 'complete'): Cocktail[] => {
+      (cocktails, selectedIngredients, searchMode): Cocktail[] => {
         if (selectedIngredients.size === 0) {
           return []
         }
@@ -111,7 +111,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
           matchingCocktails = cocktails.filter((cocktail: Cocktail) => {
             const cocktailIngredients = cocktail.ingredients.map((ing) => ing.name.toLowerCase())
 
-            return selectedIngredientsArray.every((selected: string) => {
+            return selectedIngredientsArray.every((selected) => {
               return cocktailIngredients.some(
                 (cocktailIng: string) => cocktailIng.includes(selected) || selected.includes(cocktailIng)
               )
@@ -123,14 +123,14 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
             const aMissing = a.ingredients.filter((ingredient) => {
               const ingredientName = ingredient.name.toLowerCase()
               return !selectedIngredientsArray.some(
-                (selected: string) => ingredientName.includes(selected) || selected.includes(ingredientName)
+                (selected) => ingredientName.includes(selected) || selected.includes(ingredientName)
               )
             }).length
 
             const bMissing = b.ingredients.filter((ingredient) => {
               const ingredientName = ingredient.name.toLowerCase()
               return !selectedIngredientsArray.some(
-                (selected: string) => ingredientName.includes(selected) || selected.includes(ingredientName)
+                (selected) => ingredientName.includes(selected) || selected.includes(ingredientName)
               )
             }).length
 
@@ -142,7 +142,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
             return cocktail.ingredients.every((ingredient) => {
               const ingredientName = ingredient.name.toLowerCase()
               return selectedIngredientsArray.some(
-                (selected: string) => ingredientName.includes(selected) || selected.includes(ingredientName)
+                (selected) => ingredientName.includes(selected) || selected.includes(ingredientName)
               )
             })
           })
@@ -154,7 +154,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
 
     missingIngredients: [
       (s) => [s.cocktails, s.selectedIngredients],
-      (cocktails: Cocktail[], selectedIngredients: Set<string>): Record<string, string[]> => {
+      (cocktails, selectedIngredients): Record<string, string[]> => {
         const result: Record<string, string[]> = {}
         const selectedIngredientsArray = Array.from(selectedIngredients)
 
@@ -163,7 +163,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
             .filter((ingredient) => {
               const ingredientName = ingredient.name.toLowerCase()
               return !selectedIngredientsArray.some(
-                (selected: string) => ingredientName.includes(selected) || selected.includes(ingredientName)
+                (selected) => ingredientName.includes(selected) || selected.includes(ingredientName)
               )
             })
             .map((ing) => ing.name)
