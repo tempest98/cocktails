@@ -36,7 +36,7 @@ export function IngredientSearch() {
       const fuse = new Fuse(sortedIngredientNames, {
         threshold: 0.3, // More strict matching to avoid incorrect matches
         includeScore: true,
-        keys: ['name', 'id'],
+        keys: ['name', 'id'], // Category intentionally excluded to avoid too many noisy fuzzy matches
         ignoreLocation: true,
         minMatchCharLength: 2,
         findAllMatches: true,
