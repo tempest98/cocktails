@@ -90,7 +90,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
           .map((ingredient: Ingredient) => ({
             name: ingredient.name,
             id: ingredient._id,
-            category: ingredient.category
+            category: ingredient.category,
           }))
           .sort((a: IngredientSearchItem, b: IngredientSearchItem) => a.name.localeCompare(b.name))
       },
