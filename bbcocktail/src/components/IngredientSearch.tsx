@@ -24,7 +24,7 @@ export function IngredientSearch() {
     // Combine two search methods, simple containment and fuzzy search
     // if search string is more than one character
     const directMatches = sortedIngredientNames.filter(
-      (ingredient: IngredientSearchItem) =>
+      (ingredient) =>
         ingredient.name.toLowerCase().includes(trimmedSearch) ||
         ingredient.id.toLowerCase().includes(trimmedSearch) ||
         (ingredient.category && ingredient.category.toLowerCase().includes(trimmedSearch))
@@ -43,7 +43,7 @@ export function IngredientSearch() {
       })
 
       const fuseResults = fuse.search(trimmedSearch)
-      fuseMatches = fuseResults.map<IngredientSearchItem>((result) => result.item)
+      fuseMatches = fuseResults.map((result) => result.item)
     } else {
       fuseMatches = []
     }
@@ -58,18 +58,18 @@ export function IngredientSearch() {
   useEffect(() => {
     if (filteredIngredients.length > 0) {
       const trimmedSearch = searchText.trim().toLowerCase()
-
+      
       // If search is empty, just select the first item
       if (trimmedSearch === '') {
         setHighlightedIndex(0)
         return
       }
-
+      
       // Find an exact match on name if available
       const exactMatchIndex = filteredIngredients.findIndex(
-        (ingredient) => ingredient.name.toLowerCase() === trimmedSearch
+        ingredient => ingredient.name.toLowerCase() === trimmedSearch
       )
-
+      
       // If found, highlight the exact match; otherwise default to first item
       setHighlightedIndex(exactMatchIndex !== -1 ? exactMatchIndex : 0)
     } else {

@@ -10,7 +10,7 @@ interface CocktailCardProps {
 
 export function CocktailCard({ cocktail }: CocktailCardProps) {
   const { selectedIngredients, searchMode, missingIngredients } = useValues(cocktailsLogic)
-  const selectedIngredientsArray: string[] = Array.from(selectedIngredients)
+  const selectedIngredientsArray = Array.from(selectedIngredients)
 
   // Determine ingredient availability
   const isIngredientAvailable = (ingredient: CocktailIngredient): boolean => {
