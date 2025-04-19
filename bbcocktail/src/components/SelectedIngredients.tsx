@@ -12,8 +12,11 @@ export function SelectedIngredients() {
 
   return (
     <div className="flex flex-wrap justify-center gap-2 mb-6">
-      {Array.from(selectedIngredients).map((ingredient: string) => (
-        <div key={ingredient} className="flex items-center px-3 py-1 bg-gray-200 rounded-full text-sm">
+      {Array.from(selectedIngredients).map((ingredient) => (
+        <div
+          key={ingredient}
+          className="flex items-center px-3 py-1 bg-gray-200 rounded-full text-sm"
+        >
           <span className="mr-1">{ingredient}</span>
           <button
             type="button"
@@ -27,7 +30,12 @@ export function SelectedIngredients() {
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>

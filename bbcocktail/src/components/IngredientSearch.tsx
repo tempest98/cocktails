@@ -42,7 +42,7 @@ export function IngredientSearch() {
         findAllMatches: true,
       })
 
-      const fuseResults = fuse.search<IngredientSearchItem>(trimmedSearch)
+      const fuseResults = fuse.search(trimmedSearch)
       fuseMatches = fuseResults.map<IngredientSearchItem>((result) => result.item)
     } else {
       fuseMatches = []
@@ -67,7 +67,7 @@ export function IngredientSearch() {
 
       // Find an exact match on name if available
       const exactMatchIndex = filteredIngredients.findIndex(
-        (ingredient: IngredientSearchItem) => ingredient.name.toLowerCase() === trimmedSearch
+        (ingredient) => ingredient.name.toLowerCase() === trimmedSearch
       )
 
       // If found, highlight the exact match; otherwise default to first item
@@ -106,8 +106,7 @@ export function IngredientSearch() {
 
     // First try exact match (case insensitive)
     const exactMatch = sortedIngredientNames.find(
-      (ingredient: IngredientSearchItem) =>
-        ingredient.name.toLowerCase() === trimmedSearch || ingredient.id.toLowerCase() === trimmedSearch
+      (ingredient) => ingredient.name.toLowerCase() === trimmedSearch || ingredient.id.toLowerCase() === trimmedSearch
     )
 
     if (exactMatch) {
@@ -207,7 +206,7 @@ export function IngredientSearch() {
         {isDropdownOpen && filteredIngredients.length > 0 && (
           <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
             <ul className="py-1">
-              {filteredIngredients.map((ingredient: IngredientSearchItem, index) => (
+              {filteredIngredients.map((ingredient, index) => (
                 <li
                   key={index}
                   className={`px-4 py-2 text-sm cursor-pointer ${
