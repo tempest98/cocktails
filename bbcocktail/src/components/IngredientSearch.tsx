@@ -124,13 +124,7 @@ export function IngredientSearch() {
   const handleSelectIngredient = (ingredient: IngredientSearchItem) => {
     addSelectedIngredient(ingredient.name)
     setSearchText('')
-
-    // Keep the dropdown open but update the state to trigger a re-render
-    setIsDropdownOpen((state) => {
-      // Toggle state off and on to correctly refresh the dropdown visibility
-      setTimeout(() => setIsDropdownOpen(true), 0)
-      return false
-    })
+    setIsDropdownOpen(false)
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -142,7 +136,7 @@ export function IngredientSearch() {
           e.preventDefault()
         }
         break
-        
+
       case 'ArrowDown':
         setIsDropdownOpen(true)
         if (filteredIngredients.length > 0) {
@@ -150,14 +144,14 @@ export function IngredientSearch() {
         }
         e.preventDefault() // Prevent cursor movement
         break
-        
+
       case 'ArrowUp':
         if (filteredIngredients.length > 0) {
           setHighlightedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0))
         }
         e.preventDefault() // Prevent cursor movement
         break
-        
+
       case 'Escape':
         setIsDropdownOpen(false)
         e.preventDefault()
@@ -196,7 +190,6 @@ export function IngredientSearch() {
             placeholder="Search for an ingredient..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            onFocus={() => setIsDropdownOpen(true)}
             onKeyDown={handleKeyDown}
           />
         </div>
