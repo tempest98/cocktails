@@ -1,6 +1,6 @@
 import { actions, afterMount, kea, listeners, path, reducers, selectors } from 'kea'
 import { loaders } from 'kea-loaders'
-import { Cocktail, CocktailIngredient, IngredientSearchItem } from '../types/cocktailTypes'
+import { Cocktail, CocktailIngredient, IngredientSearchItem, Ingredient } from '../types/cocktailTypes'
 
 import type { cocktailsLogicType } from './cocktailsLogicType'
 
@@ -33,7 +33,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
       },
     },
     ingredients: {
-      loadIngredients: async (): Promise<CocktailIngredient[]> => {
+      loadIngredients: async (): Promise<Ingredient[]> => {
         try {
           const response = await fetch('/ingredients.json')
           if (!response.ok) {
@@ -86,7 +86,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
         if (!ingredients) return []
 
         return ingredients
-          .map((ingredient: CocktailIngredient) => ({
+          .map((ingredient: Ingredient) => ({
             name: ingredient.name,
             id: ingredient._id
           }))
