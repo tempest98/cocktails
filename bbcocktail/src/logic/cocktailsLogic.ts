@@ -13,83 +13,83 @@ const mapToIngredientSearchItem = (ingredient: Ingredient): IngredientSearchItem
 })
 
 const findIngredientById = (ingredients: Ingredient[], id: string): Ingredient | undefined => {
-  return ingredients.find(ingredient => ingredient._id === id)
+  return ingredients.find((ingredient) => ingredient._id === id)
 }
 
 const isIngredientInSelected = (
-  cocktailIngredient: CocktailIngredient, 
-  selectedIngredients: string[], 
+  cocktailIngredient: CocktailIngredient,
+  selectedIngredients: string[],
   allIngredients: Ingredient[]
 ): boolean => {
   // Get the full ingredient details based on the cocktail ingredient ID
   const fullIngredient = findIngredientById(allIngredients, cocktailIngredient._id)
-  
+
   if (!fullIngredient) {
     // Fallback to just name matching if ingredient not found
     const lowerName = cocktailIngredient.name.toLowerCase()
-    return selectedIngredients.some(selected => selected === lowerName)
+    return selectedIngredients.some((selected) => selected === lowerName)
   }
-  
+
   // Match by ingredient name
-  if (selectedIngredients.some(selected => selected === fullIngredient.name.toLowerCase())) {
+  if (selectedIngredients.some((selected) => selected === fullIngredient.name.toLowerCase())) {
     return true
   }
-  
+
   // Match by ingredient category (handling hierarchical categories)
   if (fullIngredient.category) {
     // Split the category hierarchy
     const categoryParts = fullIngredient.category.toLowerCase().split(' > ')
-    
+
     // Check if any selected ingredient matches any part of the category hierarchy
-    if (selectedIngredients.some(selected => categoryParts.some(part => part === selected))) {
+    if (selectedIngredients.some((selected) => categoryParts.some((part) => part === selected))) {
       return true
     }
   }
-  
+
   return false
 }
 
 const getMissingIngredients = (
-  cocktail: Cocktail, 
-  selectedIngredients: string[], 
+  cocktail: Cocktail,
+  selectedIngredients: string[],
   allIngredients: Ingredient[]
 ): string[] => {
   return cocktail.ingredients
-    .filter(ingredient => !isIngredientInSelected(ingredient, selectedIngredients, allIngredients))
-    .map(ing => ing.name)
+    .filter((ingredient) => !isIngredientInSelected(ingredient, selectedIngredients, allIngredients))
+    .map((ing) => ing.name)
 }
 
 const filterCocktailsByMissingMode = (
-  cocktails: Cocktail[], 
-  selectedIngredients: string[], 
+  cocktails: Cocktail[],
+  selectedIngredients: string[],
   allIngredients: Ingredient[]
 ): Cocktail[] => {
   // Find cocktails that use ALL the selected ingredients (and may need more)
-  const filtered = cocktails.filter(cocktail => {
-    return selectedIngredients.every(selected => {
+  const filtered = cocktails.filter((cocktail) => {
+    return selectedIngredients.every((selected) => {
       // Check if any of the cocktail's ingredients match the selected ingredient by name or category
-      return cocktail.ingredients.some(ingredient => {
+      return cocktail.ingredients.some((ingredient) => {
         const fullIngredient = findIngredientById(allIngredients, ingredient._id)
-        
+
         if (!fullIngredient) {
           // Fallback to just name matching if ingredient not found
           return ingredient.name.toLowerCase() === selected
         }
-        
+
         // Match by name
         if (fullIngredient.name.toLowerCase() === selected) {
           return true
         }
-        
+
         // Match by category, handling hierarchical categories
         if (fullIngredient.category) {
           // Split the category hierarchy
           const categoryParts = fullIngredient.category.toLowerCase().split(' > ')
-          
+
           // Check if the selected ingredient matches any part of the category hierarchy
-          return categoryParts.some(part => part === selected)
+          return categoryParts.some((part) => part === selected)
         }
-        
+
         return false
       })
     })
@@ -104,13 +104,13 @@ const filterCocktailsByMissingMode = (
 }
 
 const filterCocktailsByCompleteMode = (
-  cocktails: Cocktail[], 
-  selectedIngredients: string[], 
+  cocktails: Cocktail[],
+  selectedIngredients: string[],
   allIngredients: Ingredient[]
 ): Cocktail[] => {
   // Find cocktails where all required ingredients are available
-  return cocktails.filter(cocktail => {
-    return cocktail.ingredients.every(ingredient => 
+  return cocktails.filter((cocktail) => {
+    return cocktail.ingredients.every((ingredient) =>
       isIngredientInSelected(ingredient, selectedIngredients, allIngredients)
     )
   })
@@ -197,9 +197,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
       (ingredients): IngredientSearchItem[] => {
         if (!ingredients) return []
 
-        return ingredients
-          .map(mapToIngredientSearchItem)
-          .sort((a, b) => a.name.localeCompare(b.name))
+        return ingredients.map(mapToIngredientSearchItem).sort((a, b) => a.name.localeCompare(b.name))
       },
     ],
 
@@ -211,7 +209,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
         }
 
         const selectedIngredientsArray = Array.from(selectedIngredients)
-        
+
         return searchMode === 'missing'
           ? filterCocktailsByMissingMode(cocktails, selectedIngredientsArray, ingredients)
           : filterCocktailsByCompleteMode(cocktails, selectedIngredientsArray, ingredients)
@@ -223,12 +221,12 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
       (cocktails, selectedIngredients, ingredients): Record<string, string[]> => {
         const result: Record<string, string[]> = {}
         if (!ingredients) return result
-        
+
         const selectedIngredientsArray = Array.from(selectedIngredients)
 
         cocktails.forEach((cocktail: Cocktail) => {
           const missing = getMissingIngredients(cocktail, selectedIngredientsArray, ingredients)
-          
+
           if (missing.length > 0) {
             result[cocktail._id] = missing
           }
