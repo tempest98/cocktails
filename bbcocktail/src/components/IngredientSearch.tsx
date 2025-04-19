@@ -134,36 +134,34 @@ export function IngredientSearch() {
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    // Handle Enter key
-    if (e.key === 'Enter') {
-      const matchedIngredient = findExactMatch()
-      if (matchedIngredient) {
-        handleSelectIngredient(matchedIngredient)
+    switch (e.key) {
+      case 'Enter':
+        const matchedIngredient = findExactMatch()
+        if (matchedIngredient) {
+          handleSelectIngredient(matchedIngredient)
+          e.preventDefault()
+        }
+        break
+        
+      case 'ArrowDown':
+        setIsDropdownOpen(true)
+        if (filteredIngredients.length > 0) {
+          setHighlightedIndex((prevIndex) => (prevIndex < filteredIngredients.length - 1 ? prevIndex + 1 : prevIndex))
+        }
+        e.preventDefault() // Prevent cursor movement
+        break
+        
+      case 'ArrowUp':
+        if (filteredIngredients.length > 0) {
+          setHighlightedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0))
+        }
+        e.preventDefault() // Prevent cursor movement
+        break
+        
+      case 'Escape':
+        setIsDropdownOpen(false)
         e.preventDefault()
-      }
-    }
-
-    // Show dropdown on arrow down
-    if (e.key === 'ArrowDown') {
-      setIsDropdownOpen(true)
-      if (filteredIngredients.length > 0) {
-        setHighlightedIndex((prevIndex) => (prevIndex < filteredIngredients.length - 1 ? prevIndex + 1 : prevIndex))
-      }
-      e.preventDefault() // Prevent cursor movement
-    }
-
-    // Navigate up the list
-    if (e.key === 'ArrowUp') {
-      if (filteredIngredients.length > 0) {
-        setHighlightedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0))
-      }
-      e.preventDefault() // Prevent cursor movement
-    }
-
-    // Close with Escape
-    if (e.key === 'Escape') {
-      setIsDropdownOpen(false)
-      e.preventDefault()
+        break
     }
   }
 
