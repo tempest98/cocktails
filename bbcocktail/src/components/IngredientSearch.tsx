@@ -59,6 +59,29 @@ export function IngredientSearch() {
   useEffect(() => {
     setHighlightedIndex(0)
   }, [filteredIngredients])
+  
+  // Scroll to highlighted item when it changes or dropdown opens
+  useEffect(() => {
+    if (isDropdownOpen && dropdownRef.current) {
+      const dropdownList = dropdownRef.current.querySelector('.overflow-auto')
+      const highlightedItem = dropdownRef.current.querySelector(`li:nth-child(${highlightedIndex + 1})`)
+      
+      if (dropdownList && highlightedItem) {
+        // Get positions
+        const listRect = dropdownList.getBoundingClientRect()
+        const itemRect = highlightedItem.getBoundingClientRect()
+        
+        // Check if the item is outside the visible area of the dropdown
+        if (itemRect.bottom > listRect.bottom) {
+          // Item is below the visible area
+          dropdownList.scrollTop += itemRect.bottom - listRect.bottom
+        } else if (itemRect.top < listRect.top) {
+          // Item is above the visible area
+          dropdownList.scrollTop -= listRect.top - itemRect.top
+        }
+      }
+    }
+  }, [highlightedIndex, isDropdownOpen])
 
   // Find exact match for enter key
   const findExactMatch = () => {
