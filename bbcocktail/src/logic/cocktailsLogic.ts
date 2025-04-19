@@ -194,7 +194,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
   selectors({
     sortedIngredientNames: [
       (s) => [s.ingredients],
-      (ingredients): IngredientSearchItem[] => {
+      (ingredients: Ingredient[]): IngredientSearchItem[] => {
         if (!ingredients) return []
 
         return ingredients.map(mapToIngredientSearchItem).sort((a, b) => a.name.localeCompare(b.name))
