@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` - Build for production
 - `npm run prettier` - Format code with Prettier
 - `npm run preview` - Preview production build locally
+- there is no need to explicitly execute "npm run dev" since it is running in the background
 
 ## Code Style Guidelines
 - TypeScript with strict types
