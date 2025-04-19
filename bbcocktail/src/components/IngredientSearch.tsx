@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, KeyboardEvent } from 'react'
 import { useActions, useValues } from 'kea'
 import { cocktailsLogic } from '../logic/cocktailsLogic'
-import { IngredientSearchItem } from '../types/cocktailTypes'
+import { IngredientSearchItem } from '../types/ingredientTypes'
 import Fuse from 'fuse.js'
 
 export function IngredientSearch() {
@@ -15,62 +15,79 @@ export function IngredientSearch() {
   // Get filtered ingredients based on search text
   const filteredIngredients = useMemo(() => {
     const trimmedSearch = searchText.trim().toLowerCase()
-    
+
     // If search is empty, return all ingredients
     if (trimmedSearch === '') {
       return sortedIngredientNames
     }
-    
-    // If search is only one character, do simple prefix matching
-    if (trimmedSearch.length === 1) {
-      return sortedIngredientNames.filter(ingredient => 
-        ingredient.name.toLowerCase().includes(trimmedSearch) || 
-        ingredient.id.toLowerCase().includes(trimmedSearch)
-      )
-    }
-    
-    // For longer searches, use a hybrid approach
-    // First try to find ingredients that contain the search term
-    const directMatches = sortedIngredientNames.filter(ingredient => 
-      ingredient.name.toLowerCase().includes(trimmedSearch) || 
-      ingredient.id.toLowerCase().includes(trimmedSearch)
+
+    // Combine two search methods, simple containment and fuzzy search
+    // if search string is more than one character
+    const directMatches = sortedIngredientNames.filter(
+      (ingredient) =>
+        ingredient.name.toLowerCase().includes(trimmedSearch) ||
+        ingredient.id.toLowerCase().includes(trimmedSearch) ||
+        (ingredient.category && ingredient.category.toLowerCase().includes(trimmedSearch))
     )
-    
-    // If we have direct matches, return those
-    if (directMatches.length > 0) {
-      return directMatches
+    // const directMatches: IngredientSearchItem[] = []
+
+    let fuseMatches: IngredientSearchItem[]
+    if (trimmedSearch.length > 1) {
+      const fuse = new Fuse(sortedIngredientNames, {
+        threshold: 0.3, // More strict matching to avoid incorrect matches
+        includeScore: true,
+        keys: ['name', 'id'],
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+        findAllMatches: true,
+      })
+
+      const fuseResults = fuse.search(trimmedSearch)
+      fuseMatches = fuseResults.map((result) => result.item)
+    } else {
+      fuseMatches = []
     }
-    
-    // Otherwise fall back to fuzzy search for typo tolerance
-    const fuse = new Fuse(sortedIngredientNames, {
-      threshold: 0.3, // More strict matching to avoid incorrect matches
-      includeScore: true,
-      keys: ['name', 'id'],
-      ignoreLocation: true,
-      minMatchCharLength: 2,
-      findAllMatches: true,
-    })
-    
-    const results = fuse.search(trimmedSearch)
-    return results.map(result => result.item)
+
+    const combinedResults = [...new Set(directMatches.concat(fuseMatches))]
+
+    return combinedResults
   }, [searchText, sortedIngredientNames])
 
-  // Reset highlighted index when filtered ingredients change
+  // Update highlighted index when filtered ingredients change
+  // If there's an exact match, highlight it; otherwise select the first item
   useEffect(() => {
-    setHighlightedIndex(0)
-  }, [filteredIngredients])
-  
+    if (filteredIngredients.length > 0) {
+      const trimmedSearch = searchText.trim().toLowerCase()
+      
+      // If search is empty, just select the first item
+      if (trimmedSearch === '') {
+        setHighlightedIndex(0)
+        return
+      }
+      
+      // Find an exact match on name if available
+      const exactMatchIndex = filteredIngredients.findIndex(
+        ingredient => ingredient.name.toLowerCase() === trimmedSearch
+      )
+      
+      // If found, highlight the exact match; otherwise default to first item
+      setHighlightedIndex(exactMatchIndex !== -1 ? exactMatchIndex : 0)
+    } else {
+      setHighlightedIndex(0)
+    }
+  }, [filteredIngredients, searchText])
+
   // Scroll to highlighted item when it changes or dropdown opens
   useEffect(() => {
     if (isDropdownOpen && dropdownRef.current) {
       const dropdownList = dropdownRef.current.querySelector('.overflow-auto')
       const highlightedItem = dropdownRef.current.querySelector(`li:nth-child(${highlightedIndex + 1})`)
-      
+
       if (dropdownList && highlightedItem) {
         // Get positions
         const listRect = dropdownList.getBoundingClientRect()
         const itemRect = highlightedItem.getBoundingClientRect()
-        
+
         // Check if the item is outside the visible area of the dropdown
         if (itemRect.bottom > listRect.bottom) {
           // Item is below the visible area
@@ -86,36 +103,36 @@ export function IngredientSearch() {
   // Find exact match for enter key
   const findExactMatch = () => {
     const trimmedSearch = searchText.trim().toLowerCase()
-    
+
     // First try exact match (case insensitive)
     const exactMatch = sortedIngredientNames.find(
-      ingredient => ingredient.name.toLowerCase() === trimmedSearch || ingredient.id.toLowerCase() === trimmedSearch
+      (ingredient) => ingredient.name.toLowerCase() === trimmedSearch || ingredient.id.toLowerCase() === trimmedSearch
     )
-    
+
     if (exactMatch) {
       return exactMatch
     }
-    
+
     // If no exact match and we have filtered results, use the first one
     if (filteredIngredients.length > 0) {
       return filteredIngredients[highlightedIndex]
     }
-    
+
     return null
   }
 
   const handleSelectIngredient = (ingredient: IngredientSearchItem) => {
     addSelectedIngredient(ingredient.name)
     setSearchText('')
-    
+
     // Keep the dropdown open but update the state to trigger a re-render
-    setIsDropdownOpen(state => {
+    setIsDropdownOpen((state) => {
       // Toggle state off and on to correctly refresh the dropdown visibility
       setTimeout(() => setIsDropdownOpen(true), 0)
       return false
     })
   }
-  
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Handle Enter key
     if (e.key === 'Enter') {
@@ -125,28 +142,24 @@ export function IngredientSearch() {
         e.preventDefault()
       }
     }
-    
+
     // Show dropdown on arrow down
     if (e.key === 'ArrowDown') {
       setIsDropdownOpen(true)
       if (filteredIngredients.length > 0) {
-        setHighlightedIndex((prevIndex) => 
-          prevIndex < filteredIngredients.length - 1 ? prevIndex + 1 : prevIndex
-        )
+        setHighlightedIndex((prevIndex) => (prevIndex < filteredIngredients.length - 1 ? prevIndex + 1 : prevIndex))
       }
       e.preventDefault() // Prevent cursor movement
     }
-    
+
     // Navigate up the list
     if (e.key === 'ArrowUp') {
       if (filteredIngredients.length > 0) {
-        setHighlightedIndex((prevIndex) => 
-          prevIndex > 0 ? prevIndex - 1 : 0
-        )
+        setHighlightedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0))
       }
       e.preventDefault() // Prevent cursor movement
     }
-    
+
     // Close with Escape
     if (e.key === 'Escape') {
       setIsDropdownOpen(false)
@@ -189,19 +202,22 @@ export function IngredientSearch() {
             onKeyDown={handleKeyDown}
           />
         </div>
-        
+
         {isDropdownOpen && filteredIngredients.length > 0 && (
           <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
             <ul className="py-1">
               {filteredIngredients.map((ingredient, index) => (
-                <li 
+                <li
                   key={index}
                   className={`px-4 py-2 text-sm cursor-pointer ${
                     index === highlightedIndex ? 'bg-blue-100' : 'hover:bg-blue-50'
                   }`}
                   onClick={() => handleSelectIngredient(ingredient)}
                 >
-                  {ingredient.name}
+                  <div className="flex justify-between">
+                    <span>{ingredient.name}</span>
+                    <span className="text-gray-500 text-xs">{ingredient.category || 'Uncategorized'}</span>
+                  </div>
                 </li>
               ))}
             </ul>

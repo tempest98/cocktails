@@ -1,6 +1,7 @@
 import { actions, afterMount, kea, listeners, path, reducers, selectors } from 'kea'
 import { loaders } from 'kea-loaders'
-import { Cocktail, CocktailIngredient, IngredientSearchItem, Ingredient } from '../types/cocktailTypes'
+import { Cocktail, CocktailIngredient } from '../types/cocktailTypes'
+import { IngredientSearchItem, Ingredient } from '../types/ingredientTypes'
 
 import type { cocktailsLogicType } from './cocktailsLogicType'
 
@@ -88,7 +89,8 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
         return ingredients
           .map((ingredient: Ingredient) => ({
             name: ingredient.name,
-            id: ingredient._id
+            id: ingredient._id,
+            category: ingredient.category
           }))
           .sort((a: IngredientSearchItem, b: IngredientSearchItem) => a.name.localeCompare(b.name))
       },
