@@ -116,6 +116,21 @@ const filterCocktailsByCompleteMode = (
   })
 }
 
+// Generic fetch function to eliminate code duplication
+const fetchData = async <T>(url: string, errorMessage: string): Promise<T[]> => {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(errorMessage)
+    }
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error(`Error loading data from ${url}:`, error)
+    return []
+  }
+}
+
 export const cocktailsLogic = kea<cocktailsLogicType>([
   path(['src', 'logic', 'cocktailsLogic']),
 
@@ -131,32 +146,12 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
   loaders(({ values }) => ({
     cocktails: {
       loadCocktails: async (): Promise<Cocktail[]> => {
-        try {
-          const response = await fetch('/cocktails2.json')
-          if (!response.ok) {
-            throw new Error('Failed to fetch cocktail data')
-          }
-          const data = await response.json()
-          return data
-        } catch (error) {
-          console.error('Error loading cocktail data:', error)
-          return []
-        }
+        return fetchData<Cocktail>('/cocktails2.json', 'Failed to fetch cocktail data')
       },
     },
     ingredients: {
       loadIngredients: async (): Promise<Ingredient[]> => {
-        try {
-          const response = await fetch('/ingredients.json')
-          if (!response.ok) {
-            throw new Error('Failed to fetch ingredient data')
-          }
-          const data = await response.json()
-          return data
-        } catch (error) {
-          console.error('Error loading ingredient data:', error)
-          return []
-        }
+        return fetchData<Ingredient>('/ingredients.json', 'Failed to fetch ingredient data')
       },
     },
   })),
