@@ -117,10 +117,10 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
     setCocktailNameSearch: (name: string) => ({ name }),
   }),
 
-  loaders(({ values }) => ({
+  loaders(() => ({
     cocktails: {
       loadCocktails: async (): Promise<Cocktail[]> => {
-        return fetchData<Cocktail>('/cocktails2.json', 'Failed to fetch cocktail data')
+        return await fetchData<Cocktail>('/cocktails2.json', 'Failed to fetch cocktail data')
       },
     },
   })),
@@ -142,18 +142,22 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
 
   selectors({
     filteredCocktails: [
-      (s) => [s.cocktails, ingredientsLogic.selectors.selectedIngredients, s.searchMode, ingredientsLogic.selectors.ingredients, s.cocktailNameSearch],
+      (s) => [
+        s.cocktails,
+        ingredientsLogic.selectors.selectedIngredients,
+        s.searchMode,
+        ingredientsLogic.selectors.ingredients,
+        s.cocktailNameSearch,
+      ],
       (cocktails, selectedIngredients, searchMode, ingredients, cocktailNameSearch): Cocktail[] => {
         // For name search mode, filter by cocktail name
         if (searchMode === 'name') {
           const searchTerm = cocktailNameSearch.toLowerCase().trim()
           if (!searchTerm) return []
-          
-          return cocktails.filter(cocktail => 
-            cocktail.name.toLowerCase().includes(searchTerm)
-          )
+
+          return cocktails.filter((cocktail: Cocktail) => cocktail.name?.toLowerCase().includes(searchTerm))
         }
-        
+
         // For ingredient-based search modes
         if (selectedIngredients.size === 0 || !ingredients) {
           return []
