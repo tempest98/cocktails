@@ -113,7 +113,8 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
 
   actions({
     fetchCocktails: true,
-    setSearchMode: (mode: 'missing' | 'complete') => ({ mode }),
+    setSearchMode: (mode: 'missing' | 'complete' | 'name') => ({ mode }),
+    setCocktailNameSearch: (name: string) => ({ name }),
   }),
 
   loaders(({ values }) => ({
@@ -126,17 +127,34 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
 
   reducers({
     searchMode: [
-      'missing' as 'missing' | 'complete',
+      'missing' as 'missing' | 'complete' | 'name',
       {
         setSearchMode: (_, { mode }) => mode,
+      },
+    ],
+    cocktailNameSearch: [
+      '',
+      {
+        setCocktailNameSearch: (_, { name }) => name,
       },
     ],
   }),
 
   selectors({
     filteredCocktails: [
-      (s) => [s.cocktails, ingredientsLogic.selectors.selectedIngredients, s.searchMode, ingredientsLogic.selectors.ingredients],
-      (cocktails, selectedIngredients, searchMode, ingredients): Cocktail[] => {
+      (s) => [s.cocktails, ingredientsLogic.selectors.selectedIngredients, s.searchMode, ingredientsLogic.selectors.ingredients, s.cocktailNameSearch],
+      (cocktails, selectedIngredients, searchMode, ingredients, cocktailNameSearch): Cocktail[] => {
+        // For name search mode, filter by cocktail name
+        if (searchMode === 'name') {
+          const searchTerm = cocktailNameSearch.toLowerCase().trim()
+          if (!searchTerm) return []
+          
+          return cocktails.filter(cocktail => 
+            cocktail.name.toLowerCase().includes(searchTerm)
+          )
+        }
+        
+        // For ingredient-based search modes
         if (selectedIngredients.size === 0 || !ingredients) {
           return []
         }

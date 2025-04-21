@@ -5,7 +5,7 @@ import { ingredientsLogic } from '../logic/ingredientsLogic'
 import { CocktailCard } from './CocktailCard'
 
 export function CocktailList() {
-  const { filteredCocktails, cocktailsLoading } = useValues(cocktailsLogic)
+  const { filteredCocktails, cocktailsLoading, searchMode, cocktailNameSearch } = useValues(cocktailsLogic)
   const { selectedIngredients } = useValues(ingredientsLogic)
 
   if (cocktailsLoading) {
@@ -28,11 +28,21 @@ export function CocktailList() {
       </div>
     )
   }
-
-  if (selectedIngredients.size === 0) {
+  
+  // For ingredient modes, require ingredients to be selected
+  if (searchMode !== 'name' && selectedIngredients.size === 0) {
     return (
       <div className="text-center py-10">
         <p className="text-gray-600">Add ingredients to find cocktails</p>
+      </div>
+    )
+  }
+  
+  // For name search mode, require a search term
+  if (searchMode === 'name' && !cocktailNameSearch.trim()) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-gray-600">Enter a cocktail name to search</p>
       </div>
     )
   }

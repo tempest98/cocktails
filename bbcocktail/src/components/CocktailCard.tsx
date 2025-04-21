@@ -62,29 +62,35 @@ export function CocktailCard({ cocktail }: CocktailCardProps) {
             ))}
         </div>
 
-        {/* Status badge */}
-        <div className="mb-2">
-          {searchMode === 'missing' && cocktailMissingIngredients.length > 0 ? (
-            <span className="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
-              {cocktailMissingIngredients.length} missing ingredient{cocktailMissingIngredients.length > 1 ? 's' : ''}
-            </span>
-          ) : (
-            <span className="inline-block px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-              All ingredients available!
-            </span>
-          )}
-        </div>
+        {/* Status badge - only show for ingredient-based search modes */}
+        {searchMode !== 'name' && (
+          <div className="mb-2">
+            {searchMode === 'missing' && cocktailMissingIngredients.length > 0 ? (
+              <span className="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                {cocktailMissingIngredients.length} missing ingredient{cocktailMissingIngredients.length > 1 ? 's' : ''}
+              </span>
+            ) : (
+              <span className="inline-block px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                All ingredients available!
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Ingredients list */}
         <div className="mb-3">
           {cocktail.ingredients.map((ingredient, index) => {
-            const available = isIngredientAvailable(ingredient)
+            // In name search mode, all ingredients are shown without availability status
+            const ingredientClass = searchMode === 'name' 
+              ? 'bg-gray-100 text-gray-800'
+              : isIngredientAvailable(ingredient) 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-red-100 text-red-800'
+                
             return (
               <span
                 key={`${ingredient.name}-${index}`}
-                className={`inline-block px-3 py-1 m-1 rounded-full text-sm ${
-                  available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}
+                className={`inline-block px-3 py-1 m-1 rounded-full text-sm ${ingredientClass}`}
                 title="Ingredient"
               >
                 {ingredient.name}: {formatAmount(ingredient)}
