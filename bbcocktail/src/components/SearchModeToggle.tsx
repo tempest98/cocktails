@@ -18,7 +18,7 @@ export function SearchModeToggle() {
           }`}
           onClick={() => setSearchMode('missing')}
         >
-          Find recipes using ALL ingredients & show missing
+          Uses selected ingredients
         </button>
         <button
           type="button"
@@ -29,7 +29,7 @@ export function SearchModeToggle() {
           }`}
           onClick={() => setSearchMode('complete')}
         >
-          Find recipes I can make now
+          Made from selected ingredients
         </button>
       </div>
     </div>
