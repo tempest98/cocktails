@@ -2,6 +2,7 @@ import React from 'react'
 import { useValues } from 'kea'
 import { Cocktail, CocktailIngredient } from '../types/cocktailTypes'
 import { cocktailsLogic } from '../logic/cocktailsLogic'
+import { ingredientsLogic } from '../logic/ingredientsLogic'
 import { formatAmount } from '../utils/formatAmount'
 
 interface CocktailCardProps {
@@ -9,7 +10,8 @@ interface CocktailCardProps {
 }
 
 export function CocktailCard({ cocktail }: CocktailCardProps) {
-  const { selectedIngredients, searchMode, missingIngredients } = useValues(cocktailsLogic)
+  const { searchMode, missingIngredients } = useValues(cocktailsLogic)
+  const { selectedIngredients } = useValues(ingredientsLogic)
   const selectedIngredientsArray = Array.from(selectedIngredients)
 
   // Determine ingredient availability

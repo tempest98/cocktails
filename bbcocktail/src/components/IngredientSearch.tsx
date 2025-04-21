@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, KeyboardEvent } from 'react'
 import { useActions, useValues } from 'kea'
-import { cocktailsLogic } from '../logic/cocktailsLogic'
+import { ingredientsLogic } from '../logic/ingredientsLogic'
 import { IngredientSearchItem } from '../types/ingredientTypes'
 import Fuse from 'fuse.js'
 
@@ -8,8 +8,8 @@ export function IngredientSearch() {
   const [searchText, setSearchText] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
-  const { sortedIngredientNames } = useValues(cocktailsLogic)
-  const { addSelectedIngredient } = useActions(cocktailsLogic)
+  const { sortedIngredientNames } = useValues(ingredientsLogic)
+  const { addSelectedIngredient } = useActions(ingredientsLogic)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Get filtered ingredients based on search text
@@ -29,7 +29,6 @@ export function IngredientSearch() {
         ingredient.id.toLowerCase().includes(trimmedSearch) ||
         (ingredient.category && ingredient.category.toLowerCase().includes(trimmedSearch))
     )
-    // const directMatches: IngredientSearchItem[] = []
 
     let fuseMatches: IngredientSearchItem[]
     if (trimmedSearch.length > 1) {

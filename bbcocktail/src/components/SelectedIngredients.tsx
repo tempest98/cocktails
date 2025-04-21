@@ -1,10 +1,10 @@
 import React from 'react'
 import { useActions, useValues } from 'kea'
-import { cocktailsLogic } from '../logic/cocktailsLogic'
+import { ingredientsLogic } from '../logic/ingredientsLogic'
 
 export function SelectedIngredients() {
-  const { selectedIngredients } = useValues(cocktailsLogic)
-  const { removeSelectedIngredient } = useActions(cocktailsLogic)
+  const { selectedIngredients } = useValues(ingredientsLogic)
+  const { removeSelectedIngredient } = useActions(ingredientsLogic)
 
   if (selectedIngredients.size === 0) {
     return null

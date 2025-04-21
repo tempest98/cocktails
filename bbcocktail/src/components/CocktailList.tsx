@@ -1,10 +1,12 @@
 import React from 'react'
 import { useValues } from 'kea'
 import { cocktailsLogic } from '../logic/cocktailsLogic'
+import { ingredientsLogic } from '../logic/ingredientsLogic'
 import { CocktailCard } from './CocktailCard'
 
 export function CocktailList() {
-  const { filteredCocktails, selectedIngredients, cocktailsLoading } = useValues(cocktailsLogic)
+  const { filteredCocktails, cocktailsLoading } = useValues(cocktailsLogic)
+  const { selectedIngredients } = useValues(ingredientsLogic)
 
   if (cocktailsLoading) {
     return (

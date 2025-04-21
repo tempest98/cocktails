@@ -1,21 +1,13 @@
 import { actions, afterMount, kea, listeners, path, reducers, selectors } from 'kea'
 import { loaders } from 'kea-loaders'
 import { Cocktail, CocktailIngredient } from '../types/cocktailTypes'
-import { IngredientSearchItem, Ingredient } from '../types/ingredientTypes'
+import { Ingredient } from '../types/ingredientTypes'
+import { fetchData } from '../utils/apiUtils'
+import { ingredientsLogic, findIngredientById } from './ingredientsLogic'
 
 import type { cocktailsLogicType } from './cocktailsLogicType'
 
-// Helper functions for selectors
-const mapToIngredientSearchItem = (ingredient: Ingredient): IngredientSearchItem => ({
-  name: ingredient.name,
-  id: ingredient._id,
-  category: ingredient.category,
-})
-
-const findIngredientById = (ingredients: Ingredient[], id: string): Ingredient | undefined => {
-  return ingredients.find((ingredient) => ingredient._id === id)
-}
-
+// Helper functions for cocktail filtering and processing
 const isIngredientInSelected = (
   cocktailIngredient: CocktailIngredient,
   selectedIngredients: string[],
@@ -116,30 +108,11 @@ const filterCocktailsByCompleteMode = (
   })
 }
 
-// Generic fetch function to eliminate code duplication
-const fetchData = async <T>(url: string, errorMessage: string): Promise<T[]> => {
-  try {
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error(errorMessage)
-    }
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error(`Error loading data from ${url}:`, error)
-    return []
-  }
-}
-
 export const cocktailsLogic = kea<cocktailsLogicType>([
   path(['src', 'logic', 'cocktailsLogic']),
 
   actions({
     fetchCocktails: true,
-    fetchIngredients: true,
-    setSearchTerm: (term: string) => ({ term }),
-    addSelectedIngredient: (ingredient: string) => ({ ingredient }),
-    removeSelectedIngredient: (ingredient: string) => ({ ingredient }),
     setSearchMode: (mode: 'missing' | 'complete') => ({ mode }),
   }),
 
@@ -149,35 +122,9 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
         return fetchData<Cocktail>('/cocktails2.json', 'Failed to fetch cocktail data')
       },
     },
-    ingredients: {
-      loadIngredients: async (): Promise<Ingredient[]> => {
-        return fetchData<Ingredient>('/ingredients.json', 'Failed to fetch ingredient data')
-      },
-    },
   })),
 
   reducers({
-    selectedIngredients: [
-      new Set<string>(),
-      {
-        addSelectedIngredient: (state, { ingredient }) => {
-          const newSet = new Set(state)
-          newSet.add(ingredient.toLowerCase())
-          return newSet
-        },
-        removeSelectedIngredient: (state, { ingredient }) => {
-          const newSet = new Set(state)
-          newSet.delete(ingredient.toLowerCase())
-          return newSet
-        },
-      },
-    ],
-    searchTerm: [
-      '',
-      {
-        setSearchTerm: (_, { term }) => term,
-      },
-    ],
     searchMode: [
       'missing' as 'missing' | 'complete',
       {
@@ -187,17 +134,8 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
   }),
 
   selectors({
-    sortedIngredientNames: [
-      (s) => [s.ingredients],
-      (ingredients: Ingredient[]): IngredientSearchItem[] => {
-        if (!ingredients) return []
-
-        return ingredients.map(mapToIngredientSearchItem).sort((a, b) => a.name.localeCompare(b.name))
-      },
-    ],
-
     filteredCocktails: [
-      (s) => [s.cocktails, s.selectedIngredients, s.searchMode, s.ingredients],
+      (s) => [s.cocktails, ingredientsLogic.selectors.selectedIngredients, s.searchMode, ingredientsLogic.selectors.ingredients],
       (cocktails, selectedIngredients, searchMode, ingredients): Cocktail[] => {
         if (selectedIngredients.size === 0 || !ingredients) {
           return []
@@ -212,7 +150,7 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
     ],
 
     missingIngredients: [
-      (s) => [s.cocktails, s.selectedIngredients, s.ingredients],
+      (s) => [s.cocktails, ingredientsLogic.selectors.selectedIngredients, ingredientsLogic.selectors.ingredients],
       (cocktails, selectedIngredients, ingredients): Record<string, string[]> => {
         const result: Record<string, string[]> = {}
         if (!ingredients) return result
@@ -236,13 +174,9 @@ export const cocktailsLogic = kea<cocktailsLogicType>([
     fetchCocktails: async ({}, breakpoint) => {
       actions.loadCocktails()
     },
-    fetchIngredients: async ({}, breakpoint) => {
-      actions.loadIngredients()
-    },
   })),
 
   afterMount(({ actions }) => {
     actions.fetchCocktails()
-    actions.fetchIngredients()
   }),
 ])
