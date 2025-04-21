@@ -81,12 +81,13 @@ export function CocktailCard({ cocktail }: CocktailCardProps) {
         <div className="mb-3">
           {cocktail.ingredients.map((ingredient, index) => {
             // In name search mode, all ingredients are shown without availability status
-            const ingredientClass = searchMode === 'name' 
-              ? 'bg-gray-100 text-gray-800'
-              : isIngredientAvailable(ingredient) 
-                ? 'bg-green-100 text-green-800' 
+            const ingredientClass =
+              searchMode === 'name'
+                ? 'bg-gray-100 text-gray-800'
+                : isIngredientAvailable(ingredient)
+                ? 'bg-green-100 text-green-800'
                 : 'bg-red-100 text-red-800'
-                
+
             return (
               <span
                 key={`${ingredient.name}-${index}`}

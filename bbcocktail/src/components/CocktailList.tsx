@@ -28,7 +28,7 @@ export function CocktailList() {
       </div>
     )
   }
-  
+
   // For ingredient modes, require ingredients to be selected
   if (searchMode !== 'name' && selectedIngredients.size === 0) {
     return (
@@ -37,7 +37,7 @@ export function CocktailList() {
       </div>
     )
   }
-  
+
   // For name search mode, require a search term
   if (searchMode === 'name' && !cocktailNameSearch.trim()) {
     return (
